@@ -1,5 +1,6 @@
 import express from "express";
 import fileUpload from 'express-fileupload';
+import sharp from "sharp";
 import { Joya } from "./class/joyas.js";
 // import pg from "pg";
 
@@ -15,12 +16,21 @@ app.put('/upload/:id', async (req, res)=>{
         const id = req.params.id;
         // console.log(req.files);
         let EDFile = req.files.file;
+        console.log(EDFile);
         //console.log(EDFile)
         let i = 1;
         let nombre = `anillo${i}.png`;
         if(EDFile.mimetype == 'image/png'){
             const imagenURL = `/images/${Date.now()}-${EDFile.name}`;
             console.log(imagenURL);
+            async (imagenURL) => {
+                  const image = sharp(imagenURL);
+                  const metadata = await image.metadata();
+              
+                  const width = metadata.width;
+                  const color = metadata.hasAlpha ? 'RGBA' : 'RGB';
+                    console.log(width, color);
+              };
             await EDFile.mv(`./public/files/${nombre}`);
             res.status(201).json(await joya.editarImg(id, imagenURL));
         }else{
