@@ -31,12 +31,19 @@ export class Joya{
         return resultado.rows; 
     };
 
-    async editar(id, nombre, peso, precio, material){
+    async editar(id, nombre, peso, precio, material, imagenURL){
         //punto 19
-        const resultado = await pool.query("update joya SET nombre = $2, peso = $3, precio = $4, material = $5 WHERE id = $1 RETURNING id,nombre, peso, precio, material",[id, nombre, peso, precio, material]); 
+        const resultado = await pool.query("update joya SET nombre = $2, peso = $3, precio = $4, material = $5, imagen = $6 WHERE id = $1 RETURNING id,nombre, peso, precio, material",[id, nombre, peso, precio, material, imagenURL]); 
         pool.release; 
         return resultado.rows; 
     };
+
+    async editarImg(id, imagenURL){
+        const resultado = await pool.query("update joya SET imagen = $2 WHERE id = $1 RETURNING id, imagen",[id, imagenURL]); 
+        pool.release; 
+        return resultado.rows; 
+    };
+
 
     async eliminar(id){
             

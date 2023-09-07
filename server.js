@@ -10,20 +10,26 @@ app.use(express.json());
 app.use(fileUpload());
 app.use(express.static('public'));
 
-app.post('/upload', async (req, res)=>{
-console.log(req);
-    // console.log(req.files);
-    let EDFile = req.files.file;
-    //console.log(EDFile)
-    let i = 1;
-    let nombre = `anillo${i}.png`;
-    if(EDFile.mimetype == 'image/png'){
-        await EDFile.mv(`./public/files/${nombre}`);
-    }else{
-        console.log("Error Formato Archivo 1")
+app.put('/upload/:id', async (req, res)=>{
+    try{
+        const id = req.params.id;
+        // console.log(req.files);
+        let EDFile = req.files.file;
+        //console.log(EDFile)
+        let i = 1;
+        let nombre = `anillo${i}.png`;
+        if(EDFile.mimetype == 'image/png'){
+            const imagenURL = `/images/${Date.now()}-${EDFile.name}`;
+            console.log(imagenURL);
+            await EDFile.mv(`./public/files/${nombre}`);
+            res.status(201).json(await joya.editarImg(id, imagenURL));
+        }else{
+            console.log("Error Formato Archivo 1")
+        }
+    }catch(error){
+        res.sendStatus(400)
     }
-
-        res.send(`<img src='/files/anillo1.png'>`) 
+//console.log(req);
 })
 
 app.get("/imagen", (req, res)=>{
@@ -80,10 +86,24 @@ app.post("/v1/joyas", async (req, res)=>{
 }
 });
 
-app.put("/v1/joyas/", async (req,res)=>{
+app.put("/v1/joyas/:id", async (req,res)=>{
     try{
-        const {id, nombre, peso, precio, material} = req.body
-        res.status(201).json(await joya.editar(id, nombre, peso, precio, material));
+        const id = req.params.id;
+        // console.log(req.files);
+        let EDFile = req.files.file;
+        //console.log(EDFile)
+        let i = 1;
+        let nombreImg = `anillo${i}.png`;
+        if(EDFile.mimetype == 'image/png'){
+            const imagenURL = `/images/${Date.now()}-${EDFile.name}`;
+            console.log(imagenURL);
+            await EDFile.mv(`./public/files/${nombreImg}`);
+            const {nombre, peso, precio, material} = req.body
+            res.status(201).json(await joya.editar(id, nombre, peso, precio, material, imagenURL));
+        }else{
+            console.log("Error Formato Archivo 1")
+        }
+
     }catch(error){
         res.sendStatus(400)
     }
